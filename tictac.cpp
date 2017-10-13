@@ -21,6 +21,7 @@ Graph* TicTac::createGraph(int n){
   return List;
 }
 
+//create nodes to be inserted into the graph
 Node* TicTac::createNode(char b[3][3]){
   struct Node* newNode = new Node;
   for(int i=0;i<3;i++){
@@ -32,9 +33,11 @@ Node* TicTac::createNode(char b[3][3]){
   return newNode;
 }
 
-void TicTac::insertNode(Graph* G, char b1[3][3], char b2[3][3],int x){
+//Inserts nodes into the graph using the adjacency list analogy
+void TicTac::insertNode(Graph* G, char b1[3][3], char b2[3][3],int x, char ch){
   Node* newNode1 = createNode(b1);
   Node* newNode2 = createNode(b2);
+  newNode2->player = ch;
   Node* curr = G->vertList[x].verticeslist;
 
   if(G->vertList[x].verticeslist == NULL){
@@ -48,23 +51,35 @@ void TicTac::insertNode(Graph* G, char b1[3][3], char b2[3][3],int x){
   }
 }
 
-void  TicTac::addRoot(Graph* G, char b[3][3], int x){
+void  TicTac::addRoot(Graph* G, char b[3][3], int x,char ch){
   Node* newNode = createNode(b);
+  newNode->player = ch;
   G->vertList[x].verticeslist = newNode;
+
 }
 
 
-void TicTac::fillMatrix(Graph* G,char m[3][3],char mat[3][3],int i,int j,int level){
-  mat[i][j] = 'X';
-  insertNode(G,m,mat,level);
-  mat[i][j] = '*';
-}
+void TicTac::fillMatrix(Graph* G,char m[3][3],int level){
 
-char** TicTac::searchByValue(Graph* G, int a){
-  Node* node = G->vertList[a-1].verticeslist;
-  int i=0;
-  while(i!=a){
-    node= node->next;
+  char matrix[3][3];
+  char ch;
+  if(G->vertList[level].verticeslist->player=='X'){
+    ch = 'O';
+  }else{
+    ch = 'X';
   }
-  return node->board;
+  for(int i=0;i<3;i++){
+    for(int j=0;j<3;j++){
+      matrix[i][j] = m[i][j];
+    }
+  }
+  for(int i=0;i<3;i++){
+    for(int j=0;j<3;j++){
+      if(matrix[i][j]!='X'&& matrix[i][j]!='O'){
+        matrix[i][j] = G->vertList[level].verticeslist->player;
+        insertNode(G,m,matrix,level,ch);
+        matrix[i][j] = '*';
+      }
+    }
+  }
 }
